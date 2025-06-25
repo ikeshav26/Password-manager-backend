@@ -1,9 +1,9 @@
 import User from "../model/user.model.js";
-import brcypt from "bcryptjs";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 
-const  userSignup=async(req,res)=>{
+export const userSignup=async(req,res)=>{
     try{
         const {username,email,password}=req.body;
         if(!username || !email || !password){
@@ -15,7 +15,7 @@ const  userSignup=async(req,res)=>{
             return res.status(400).json({ message: "User already exists" });
         }
 
-        const hashedPasword=await brcypt.hash(password,10)
+        const hashedPasword=await bcrypt.hash(password,10)
 
         const newuser=new User({
             username:username,
@@ -42,4 +42,41 @@ const  userSignup=async(req,res)=>{
     }
 }
 
-export default userSignup;
+
+export const userLogin=async(req,res)=>{
+    try{
+        const {email,password}=req.body;
+        console.log(email,password);
+        if(!email || !password){
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        const user=await User.findOne({email:email});
+        if(!user){
+            return res.status(400).json({ message: "Invalid credentials" });
+        }
+
+        const isPasswordValid=await bcrypt.compare(password,user.password)
+        if(!isPasswordValid){
+            return res.status(400).json({ message: "Invalid credentials" });
+        }
+
+        const token=jwt.sign(
+            { userId: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: "7d" }
+        );
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+        });
+
+        res.status(200).json({ message: "Login successful", user });
+
+    }catch(error){
+        console.error("Error during user login:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+

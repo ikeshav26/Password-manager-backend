@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import connectToMongoDB from './src/config/mongoDb.config.js';
 import cookieParser from 'cookie-parser';
+import userRoutes from './src/routes/user.routes.js';
 
 
 
@@ -21,6 +22,9 @@ app.use(cookieParser())
 app.get('/', (req, res) => {
   res.send('password manager');
 });
+
+app.use('/api/user',userRoutes)
+
 
 
 

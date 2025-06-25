@@ -23,3 +23,18 @@ export const createPassword = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 }
+
+
+export const getAllPassword= async (req,res)=>{
+    try{
+        const passdetails=await Password.find({userId:req.user.userId});
+        if(!passdetails || passdetails.length === 0){
+            return res.status(404).json({ message: "No passwords found" });
+        }
+        res.status(200).json({ message: "Passwords fetched successfully", passwords: passdetails });
+
+    }catch(error){
+        console.error("Error fetching passwords:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}

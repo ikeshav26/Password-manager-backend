@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import connectToMongoDB from './src/config/mongoDb.config.js';
 import cookieParser from 'cookie-parser';
 import userRoutes from './src/routes/user.routes.js';
+import passwordRoutes from './src/routes/password.routes.js';
 
 
 
@@ -24,6 +25,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/user',userRoutes)
+app.use('/api/password', passwordRoutes);
 
 
 

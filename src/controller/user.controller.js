@@ -1,4 +1,6 @@
 import User from "../model/user.model.js";
+import brcypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 
 const  userSignup=async(req,res)=>{
@@ -13,14 +15,26 @@ const  userSignup=async(req,res)=>{
             return res.status(400).json({ message: "User already exists" });
         }
 
+        const hashedPasword=await brcypt.hash(password,10)
+
         const newuser=new User({
-            username,
-            email,
-            password
+            username:username,
+            email:email,
+            password:hashedPasword
         })
 
         await newuser.save();
 
+        const token=jwt.sign(
+            { userId: newuser._id },
+            process.env.JWT_SECRET,
+            { expiresIn: "7d" }
+        );
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+        });
         res.status(201).json({ message: "User created successfully", user: newuser });
     }catch(error){
         console.error("Error during user signup:", error);

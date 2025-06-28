@@ -15,7 +15,7 @@ const app = express();
 connectToMongoDB()
 
 app.use(cors({
-  origin: 'http://localhost:5173', 
+  origin: 'https://password-manager-frontend-seven.vercel.app', 
   credentials: true, 
 }));
 

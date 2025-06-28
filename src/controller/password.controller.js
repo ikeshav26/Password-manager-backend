@@ -42,7 +42,7 @@ export const getAllPassword= async (req,res)=>{
 
 export const deletePassword=async(req,res)=>{
     try{
-        const {title,username,email}=req.body;
+        const {title,username,email,id}=req.body;
         if(!title || !username || !email){
             return res.status(400).json({ message: "All fields are required" });
         }
@@ -51,6 +51,7 @@ export const deletePassword=async(req,res)=>{
             title,
             username,
             email,
+            _id: id,
             userId: req.user.userId
         });
         if(!deletedPassword){

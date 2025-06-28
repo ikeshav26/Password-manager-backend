@@ -38,3 +38,27 @@ export const getAllPassword= async (req,res)=>{
         res.status(500).json({ message: "Internal server error" });
     }
 }
+
+
+export const deletePassword=async(req,res)=>{
+    try{
+        const {title,username,email}=req.body;
+        if(!title || !username || !email){
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        const deletedPassword = await Password.findOneAndDelete({
+            title,
+            username,
+            email,
+            userId: req.user.userId
+        });
+        if(!deletedPassword){
+            return res.status(404).json({ message: "Password not found" });
+        }
+        res.status(200).json({ message: "Password deleted successfully", password: deletedPassword });
+    }catch(error){
+        console.error("Error deleting password:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
